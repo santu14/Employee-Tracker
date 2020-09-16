@@ -1,19 +1,23 @@
 // Set up inquirer mysq and tables npm
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+// const table = require("console.table");
+
+
 
 // set up my sql connection
 const connection = mysql.createConnection({
   host: "localhost",
 
-  port: 8080,
+  port: 3306,
 
   // Your username
   user: "root",
 
+
   // Your password
   password: "mysqlpassword",
-  database: "employeesbd",
+  database: "employeedb",
 });
 
 // Initial inquirer questions
@@ -31,25 +35,39 @@ const start = () => {
         "Add department",
         "Add role",
         "Delete employee",
-      ],
+      ]
     })
     .then((answers) => {
-      console.log(answers);
+      
+      console.log(answers.selection);
 
       // switch case for each option available that runs our functions
       switch (answers.selection) {
-        case "view all employees":
+        case "View all employees":
+          viewAllEmployees();
           break;
         case "View all departments":
+          viewAllDepartments();
           break;
         case "View all roles":
+          viewAllRoles();
+          
+
           break;
         case "Add employee":
+          
+
           break;
         case "Add department":
           break;
         case "Add role":
           break;
+        default:
+          console.log(answers.selection + "  still default");
+
+          break;
+
+
       }
     });
 };
@@ -59,14 +77,33 @@ const start = () => {
 //      - Use department, role, and manager ids to display correponding data from all 3 tables as our view all employees
 
 const viewAllEmployees = () => {
+  connection.query(`SELECT * FROM employees`, (err, res) => {
+    if (err) throw err;
 
+    console.table(res);
+    
+    start();
+  });
 }
-const viewAllDepartment = () => {
-  
-}
+const viewAllDepartments = () => {
+  connection.query(`SELECT * FROM departments`, (err, res) => {
+    if (err) throw err;
+
+    console.table(res);
+    
+    start();
+  });
+};
 const viewAllRoles = () => {
-  
-}
+  connection.query(`SELECT * FROM roles`, (err, res) => {
+    if (err) throw err;
+
+    console.table(res);
+    
+    start();
+  });
+};
+
 //  - Individial add functions for employees departments and roles
 //      - add function contains a subset of inquirer questions for entering information
 //  - Individial delete functions for employees departments and roles
