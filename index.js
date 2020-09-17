@@ -1,7 +1,8 @@
 // Set up inquirer mysq and tables npm
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-// const table = require("console.table");
+const table = require("console.table");
+const boxen = require('boxen');
 
 
 
@@ -39,7 +40,7 @@ const start = () => {
     })
     .then((answers) => {
       
-      console.log(answers.selection);
+  
 
       // switch case for each option available that runs our functions
       switch (answers.selection) {
@@ -51,8 +52,6 @@ const start = () => {
           break;
         case "View all roles":
           viewAllRoles();
-          
-
           break;
         case "Add employee":
           
@@ -77,38 +76,87 @@ const start = () => {
 //      - Use department, role, and manager ids to display correponding data from all 3 tables as our view all employees
 
 const viewAllEmployees = () => {
-  connection.query(`SELECT * FROM employees`, (err, res) => {
+
+  console.log(`
+**********************************************************************
+*                        -  EMPLOYEES  -                             *
+**********************************************************************
+`)
+  const query = `SELECT 
+  employees.id AS "ID",
+  first_name AS "First Name",
+  last_name AS "Last Name",
+  title AS "Title",
+  salary AS "Salary",
+  departments.dep_name AS "Department"
+  FROM employees
+  JOIN manager ON employees.manager_id = manager.id
+  JOIN roles ON employees.role_id = roles.id
+  JOIN departments ON departments.id = roles.dep_id
+  ORDER BY employees.id`
+  connection.query(query, (err, res) => {
     if (err) throw err;
 
     console.table(res);
-    
+    console.log(`**********************************************************************
+    `)
     start();
   });
 }
 const viewAllDepartments = () => {
-  connection.query(`SELECT * FROM departments`, (err, res) => {
+  console.log(`
+****************************************
+*         -  DEPARTMENTS -             *
+****************************************
+  `)
+  const query = `SELECT 
+  departments.id AS "ID",
+  dep_name AS "Department Name"
+  FROM departments
+  ORDER BY departments.id`
+  connection.query(query, (err, res) => {
     if (err) throw err;
 
     console.table(res);
-    
+    console.log(`****************************************
+    `)
     start();
   });
 };
 const viewAllRoles = () => {
-  connection.query(`SELECT * FROM roles`, (err, res) => {
+  console.log(`
+****************************************************
+*                  -  ROLES -                      *
+****************************************************
+`)
+  const query = `SELECT 
+  roles.id AS "ID",
+  title AS "Role Title",
+  salary AS "Salary",
+  dep_name AS "Department"
+  FROM roles
+  JOIN departments ON roles.dep_id = departments.id
+  ORDER BY roles.id`
+  connection.query(query, (err, res) => {
     if (err) throw err;
 
     console.table(res);
-    
+    console.log(`****************************************************
+    `)
     start();
   });
 };
 
 //  - Individial add functions for employees departments and roles
 //      - add function contains a subset of inquirer questions for entering information
+
+
+
 //  - Individial delete functions for employees departments and roles
 
 connection.connect(function () {
   console.log("connected as id " + connection.threadId + "\n");
+
+  console.log(boxen("EMPLOYEE MANAGER", {padding: 4, borderStyle: 'double'}));
   start();
 });
