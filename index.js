@@ -209,6 +209,7 @@ const addEmployee = () => {
       );
     });
 };
+
 const addDepartment = () => {
   console.log(
     boxen("           - ADD NEW DEPARTMENT -            ", {
@@ -240,6 +241,7 @@ const addDepartment = () => {
       });
     });
 };
+
 const addRole = () => {
   console.log(
     boxen("           - ADD NEW ROLE -            ", {
@@ -298,7 +300,7 @@ const updateEmployeeRoles = () => {
       borderStyle: "double",
     })
   );
-  // Query our eployees
+  // Query our employees
   connection.query(
     "SELECT id, first_name, last_name FROM employees",
     (err, res) => {
@@ -306,12 +308,13 @@ const updateEmployeeRoles = () => {
 
       // Create array of employees
       let employeesArray = [];
-      for (i = 0; i < res.length; i++) {
+      res.forEach(employee => {
         employeesArray.push({
-          name: `${res[i].first_name} ${res[i].last_name}`,
-          id: res[i].id,
+          name: `${employee.first_name} ${employee.last_name}`,
+          id: employee.id,
         });
-      }
+      });
+     
 
       // Inqure as to which employee to update
       inquirer
@@ -338,9 +341,10 @@ const updateEmployeeRoles = () => {
             if (err) throw err;
             // create array of exsisting roles
             let roles = [];
-            for (i = 0; i < res.length; i++) {
-              roles.push({ name: res[i].title, id: res[i].id });
-            }
+            res.forEach(role => {
+              roles.push({ name: role.title, id: role.id });
+            });
+            
             // Inqure new role to update
             inquirer
               .prompt([
@@ -387,6 +391,7 @@ const updateEmployeeRoles = () => {
     }
   );
 };
+
 //  Individial delete functions for employees
 const deleteEmployee = () => {
   console.log(
@@ -461,6 +466,7 @@ const deleteEmployee = () => {
     }
   );
 };
+
 connection.connect(() => {
   console.log("connected as id " + connection.threadId + "\n");
 
